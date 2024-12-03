@@ -3,6 +3,9 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 
+// In-memory variable to track click count globally
+let counter = 0;
+
 app.use(bodyParser.json());
 
 // Initialize Endpoint
@@ -28,7 +31,7 @@ app.post("/initialize", (req, res) => {
           },
           {
             type: "button",
-            id: "primary-1",
+            id: "start",
             label: "Click Me!",
             style: "primary",
             action: {
@@ -49,6 +52,14 @@ app.post("/initialize", (req, res) => {
 app.post("/submit", (req, res) => {
   console.log("Submit request received:", req.body);
 
+  // Extract component_id from the request body
+  const componentId = req.body.component_id;
+
+  // Increment the global counter if "clicker" button was clicked
+  if (componentId === "clicker") {
+    counter += 1; // Use the global `counter` variable
+  }
+
   // Updated canvas in response to the submit action
   const updatedCanvas = {
     canvas: {
@@ -56,21 +67,44 @@ app.post("/submit", (req, res) => {
         components: [
           {
             type: "text",
-            text: "Thank you for clicking the button!",
+            text: "Welcome",
+            style: "header",
+            align: "center",
+          },
+          {
+            type: "text",
+            text: "OMG IT CHANGED",
+            style: "muted",
+            align: "center",
           },
           {
             type: "button",
-            label: "Another Action",
+            id: "primary-2",
+            label: "Don't Click Me...",
+            style: "primary",
+            disabled: true,
             action: {
               type: "submit",
-              url: "https://e4dbad28-8462-43f6-a204-461978eeb5e8-00-2zlteizau659m.janeway.replit.dev/submit",
             },
+          },
+          {
+            type: "button",
+            id: "clicker",
+            label: "Clicker",
+            style: "secondary",
+            action: {
+              type: "submit",
+            },
+          },
+          {
+            type: "text",
+            id: "click-count",
+            text: `Clicker Counter: ${counter}`,
+            style: "muted",
+            align: "center",
           },
         ],
       },
-    },
-    event: {
-      type: "completed", // Optional: Indicate that the action is complete
     },
   };
 
