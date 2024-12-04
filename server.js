@@ -7,10 +7,38 @@ const PORT = 3000;
 let hostURL =
   "https://e4dbad28-8462-43f6-a204-461978eeb5e8-00-2zlteizau659m.janeway.replit.dev/";
 
+const mongoUsername = encodeURIComponent("gabrieldcosta2002");
+const mongoPass = encodeURIComponent("IWN1Ck2COkUSEQxs");
+
 // In-memory variable to track click count globally
 let counter = 0;
 
+// MonogDB Vars
+const MONGO_URI =
+  `mongodb+srv://${mongoUsername}:${mongoPass}@cluster0.hz5oo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const DATABASE_NAME = "clickTrackerIntercomDB";
+let db;
+
 app.use(bodyParser.json());
+
+// Connect to MongoDB before starting the server
+MongoClient.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then((client) => {
+    db = client.db(DATABASE_NAME);
+    console.log(`Connected to MongoDB Database: ${DATABASE_NAME}`);
+
+    // Start the server
+    app.listen(PORT, () => {
+      console.log(`Server is running on Port: ${PORT}`);
+      console.log(`Server is running on URL: ${hostURL}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB", err);
+  });
 
 // Initialize Endpoint
 app.post("/initialize", (req, res) => {
@@ -131,9 +159,4 @@ app.post("/submit", (req, res) => {
   // Set content type and status code, and send the response
   res.setHeader("Content-Type", "application/json");
   res.status(200).json(updatedCanvas);
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
