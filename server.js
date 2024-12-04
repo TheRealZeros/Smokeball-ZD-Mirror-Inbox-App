@@ -1,7 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const { MongoClient } = require("mongodb");
 const PORT = 3000;
+
+let hostURL =
+  "https://e4dbad28-8462-43f6-a204-461978eeb5e8-00-2zlteizau659m.janeway.replit.dev/";
 
 // In-memory variable to track click count globally
 let counter = 0;
@@ -60,6 +64,10 @@ app.post("/submit", (req, res) => {
     counter += 1; // Use the global `counter` variable
   }
 
+  if (componentId === "reset") {
+    counter = 0;
+  }
+
   // Updated canvas in response to the submit action
   const updatedCanvas = {
     canvas: {
@@ -102,6 +110,15 @@ app.post("/submit", (req, res) => {
             text: `Clicker Counter: ${counter}`,
             style: "muted",
             align: "center",
+          },
+          {
+            type: "button",
+            id: "reset",
+            label: "Reset clicks",
+            style: "secondary",
+            action: {
+              type: "submit",
+            },
           },
         ],
       },
